@@ -40,8 +40,15 @@ for (my $i = 0; $i < @header; $i++) {
 	}
 }
 
+### adjust for ubiquitous presence
+my @balance;
+for (my $j = 0; $j < @header; $j++) {
+	push @balance,0;
+}
 ### z-score each row and convert to binary based on whether the score is positive or negative
 foreach my $i (keys %m) {
+	my @temp = @{$mm{$i}};
+	push @temp,@balance;
 	$mean{$i} = getMean($mm{$i});
 	$std{$i} = getMeanStandardDeviation($mm{$i});
 	for (my $j = 0; $j < @header; $j++) {
