@@ -1,6 +1,34 @@
 use FileUtil;
 
 # This file takes the raw read data mapped to a reference genome and identifies informative reads (aka reads that show signs of containing a junction meeting certain minimal criteria given a locally aligned read)
+#
+# The inputs are:
+#   - Expected read length
+#   - Max junction error (so account for fuzzy edges)
+#   - Max read error (max number of mismatches allowed in read)
+#   - log file
+#   - junction type (used to name output file)
+#   - input file 1: the R1 read mapped to the genome (either forward or reverse complement)
+#   - input file 2: the R1 read mapped to the TEs (file 1 and 2 are paired)
+#
+# The goal is to see the read align to the genome with some soft clipping, and then the same read should also map to a TE with the rest of the read being soft-clipped.
+# These two local hits should more or less be exclusive of each other. If these criteria and that the read maps somewhat uniquely - it is output with the relevant info.
+#
+# The output file contains the following information in a tab-delimited format:
+#   - read id
+#   - genome molecule id 
+#   - position on genome
+#   - q-score on genome
+#   - cigar string on genome
+#   - "TEs"
+#   - position on TE
+#   - qscore on TE
+#   - cigar on TE
+#   - errors
+#   - total good reads for this TE
+#   - total seen
+#   - total with bad junction
+#   - total with bad reference
 
 my $expectedLen = shift;
 my $maxJunctionError = shift;
