@@ -1,5 +1,68 @@
 # DrosCellID
 
-Masking of reference genome was performed with ncbi blast-2.2.26:
+### This file provides a general workflow for identifying TE junctions for a given cell line
+Broadly speaking there here are the main steps in the process:
+-	Mask reference genome for transposons of interest
+-	Trim the reads for adapter/low quality bases
+-	Map reads to transposon sequences
+-	Demultiplex sample data based on transposon mapping
+-	Map the demultiplexed reads to the genome and transposons
+-	Identify informative reads that span TE junctions 
+-	Aggregate informative reads to call TE junctions
+-	Identify and describe putative transposable elements
 
-blastall -i te_consensus.fasta -d dmel-all-chromosome-r6.30.fasta -p blastn -a 10 -e 1e-100 -F "m L" -U T -K 20000 -b 20000 -m 8 | perl maskRef.pl dmel-all-chromosome-r6.30.fasta - > dmel-all-chromosome-r6.30.masked.fasta
+### Mask reference genome for known transposons of interest
+Masking of reference genome was performed with ncbi blast-2.2.26:
+blastall -i <transposon_consensus.fasta> -d <reference_genome.fasta> -p blastn -a 10 -e 1e-100 -F "m L" -U T -K 20000 -b 20000 -m 8 | perl maskRef.pl <reference_genome.fasta> - > <masked_reference_genome.fasta>
+
+### Trim reads for adapter/low quality bases
+There is no specific process for this, use your favorite trimming software. Examples that we use regularly are Trimmomatic or fastp
+
+### Map reads to transposon sequences
+Used your favorite mapping software to map R2 reads to the transposon consensus sequences. We used bowtie2 to do the mapping. R2 reads should be internal to the transposon.
+
+### Demultiplex sample data based on transposon mapping
+Based on the mapping of the R2 reads to the transposon sequences, we demultiplex the paired-end reads into the individual files tagged with the transposon that the reads are affiliated with.
+This is performed using the demultiplexPairedSamples.pl script, here is an example command line:
+perl demultiplexPairedSamples.pl <transposon_mapping_result.sam> <R1_fastq_file> <R2_fastq_file> <output_path_and_basename>
+The final filename(s) will be the <output_path_and_basename>.<id_of_hit_transposon>.fastq.gz
+Here is an example commandline:
+perl demultiplexPairedSamples.pl transposonMapping/sample1.sam.gz trimmed/sample1_R1_001.paired.trimmed.fastq trimmed/ sample1_S1_R2_001.paired.trimmed.fastq demultiplexed/sample1
+The output files generated would look like:
+demultiplexed/sample1.1731.R1.fastq.gz
+demultiplexed/sample1.1731.R2.fastq.gz
+demultiplexed/sample1.297.R1.fastq.gz
+demultiplexed/sample1.297.R2.fastq.gz
+demultiplexed/sample1.copia.R1.fastq.gz
+demultiplexed/sample1.copia.R2.fastq.gz
+demultiplexed/sample1.mdg1.R1.fastq.gz
+demultiplexed/sample1.mdg1.R2.fastq.gz
+demultiplexed/sample1.roo.R1.fastq.gz
+demultiplexed/sample1.roo.R2.fastq.gz
+
+### Map the demultiplexed reads to the genome and transposons
+Every instance of the demultiplexed R1 reads need to be mapped to the transposon masked reference genome, in both the forward and reverse-complement orientation, and mapped to the transposon consensus sequences to identify reads that identify the junction between transposons and the genome. Reads must be mapped with soft clipping turned on to identify these junction reads.
+Mapping can be done with any mapping tool that meets these requirements and produces SAM formatted output. Here are the example commands for:
+bowtie2 -x masked_reference_forward –local –no-head -k 2 -U demultiplexed/sample1.copia.R1.fastq.gz | gzip -c > sam/sample1.copia.sam.dmel.gz
+bowtie2 -x masked_reference_reverse –local –no-head -k 2 -U demultiplexed/sample1.copia.R1.fastq.gz | gzip -c > sam/sample1.copia.sam.dmel.rc.gz
+bowtie2 -x transposon_consensus –local –no-head -k 2 -U demultiplexed/sample1.copia.R1.fastq.gz | gzip -c > sam/sample1.sam.TEs.gz
+
+### Identify informative reads that span TE junctions
+This step takes the search results and looks for reads that straddle transposon boundary and outputs these for aggregation and transposon site calling. It works on existing and previously unidentified transposons insertions.
+# example commands – they come in pairs (for the forward search and the reverse-complement search).
+perl identifyGenomicTEJunctions.pl 108 5 5 xxx.log 1731 sam/sample1.copia.sam.dmel.gz sam/sample1.copia.sam.TEs.gz | sort -k 2,2 -k 3,3n > candidate/sample1.copia.for.cand.txt
+perl identifyGenomicTEJunctions.pl 108 5 5 xxx.log 1731 sam/sample1.copia.sam.dmel.rc.gz sam/sample1.copia.sam.TEs.gz | sort -k 2,2 -k 3,3n > candidate/sample1.copia.rev.cand.txt
+
+### Generate read count summary file
+Given all the initially parsed mapping data is in a set of files, this command will take as input that list of files and generate a summary of the read count information.
+grep TEs candidate/*txt | perl generateReadCountSummaryFile.pl - > readCountSummary.txt
+
+### Aggregate informative reads to call TE junctions
+Taking the junction associated reads, data is aggregated to identify high confidence junctions. High confidence junctions have a number of independent reads starting at a number of different positions on the genome; this is done to filter out/exclude junctions-like cases resulting from amplification artifacts such as PCR-duplicates.
+perl findJunctions3.pl readCountSummary.txt <transposon_type> <algorithm> candidate/sample1.copia.for.cand.txt candidate/sample1.copia.for.cand.txt candidate/sample1.copia.rev.cand.txt candidate/sample1.copia.rev.cand.txt masked_reference_forward.fasta | sort -k 1,1 -k 2,2n > sample1.copia.candidate.junctions.txt
+
+### Predict transposable elements
+Take the predicted junctions and consider whether they can be combined to identify intact transposable elements in the genome.
+perl predictElement.pl <candidate_junction_file> <masked_reference_forward.fasta>
+
+
