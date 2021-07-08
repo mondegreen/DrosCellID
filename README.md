@@ -8,6 +8,8 @@ Broadly speaking there here are the main steps in the process:
 -	Identify informative reads that span TE junctions 
 -	Aggregate informative reads to call TE junctions
 -	Identify and describe putative transposable elements
+-	Create a presence/absence tab-delimited file
+-	Visualize and cluster the binary presence/absence file
 
 ### Mask reference genome for known transposons of interest
 Masking of reference genome was performed with ncbi blast-2.2.26:<br>
@@ -76,6 +78,16 @@ perl findJunctions3.pl readCountSummary.txt <transposon_type> <algorithm> candid
 ### Predict transposable elements
 Take the predicted junctions and consider whether they can be combined to identify intact transposable elements in the genome.
 ```
-perl predictElement.pl <candidate_junction_file> <masked_reference_forward.fasta>
+perl predictElement.pl <candidate_junction_file> <masked_reference_forward.fasta> > <results_file>
 ```
+
+### Create a presence/absence tab-delimited file
+Generating a table of the results files containing the full path to a particular result file, the sample id to use for this file, and the transposon name. This should be tab-delimited and is used as input.<br>
+Run the following command to convert the results files into a binary table of results for clustering and visualization:
+```
+perl convert2Presence.pl <results_table> > combined.presence.tsv
+```
+
+### Cluster and visualize the results
+
 
