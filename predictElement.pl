@@ -19,16 +19,16 @@ use FileUtil;
 ### 1) molecule
 ### 2) coordinate (0 indexed interbase coordinate system)
 ### 3) number of reads identified
-### 4) number of independent starts identified in the forward orientation
-### 5) number of independent starts identified in the reverse orientation
+### 4) number of independent starts identified in the forward genome
+### 5) number of independent starts identified in the reverse-complemented genome
 ###
-### the output for unpaired TE junctions is tab-delimited and looks like:
+### the output for paired TE junctions is tab-delimited and looks like:
 ### 2L	498332	236	0	29	x	7	0	x	2L	498339	30	9	0
 ### 1) molecule
 ### 2) coordinate (0 indexed interbase coordinate system)
 ### 3) number of reads identified
-### 4) number of independent starts identified in the forward orientation
-### 5) number of independent starts identified in the reverse orientation
+### 4) number of independent starts identified in the forward genome
+### 5) number of independent starts identified in the reverse-complemented genome
 ### 6) spacer
 ### 7) distance between second element
 ### 8) number of N's between second element
@@ -36,10 +36,8 @@ use FileUtil;
 ### 10) molecule
 ### 11) coordinate (0 indexed interbase coordinate system)
 ### 12) number of reads identified
-### 13) number of independent starts identified in the forward orientation
-### 14) number of independent starts identified in the reverse orientation
-
-
+### 13) number of independent starts identified in the forward genome
+### 14) number of independent starts identified in the reverse-complemented genome
 
 my $file = shift;
 my $fasta = shift;
