@@ -89,5 +89,10 @@ perl convert2Presence.pl <results_table> > combined.presence.tsv
 ```
 
 ### Cluster and visualize the results
-
-
+Clustering and visualization was carried out in R with the following commands:
+```
+library("gplots")
+data<-read.table("combined.presence.tsv",sep="\t",header=TRUE,row.names=1)
+my_palette <- colorRampPalette(c("black", "green"))(n = 2)
+heatmap.2(x=t(as.matrix(data)),distfun = function(x) dist(x,method='binary'),scale="column",dendrogram = c("row"),labCol=FALSE,trace="none",margins=c(5,20),key=FALSE, col=my_palette)
+```
