@@ -1,5 +1,8 @@
-### This file provides a general workflow for identifying TE junctions for a given cell line
-Broadly speaking there here are the main steps in the process:
+# This file provides a general workflow for identifying TE junctions for a given Drosophila cell line
+
+## This section describes the process of identifying TE junctions without prior information about the location of the TEs (slower)
+
+Broadly speaking there here are the main steps in the process (each described in more detail below):
 -	Mask reference genome for transposons of interest
 -	Trim the reads for adapter/low quality bases
 -	Map reads to transposon sequences
@@ -96,3 +99,24 @@ data<-read.table("combined.presence.tsv",sep="\t",header=TRUE,row.names=1)
 my_palette <- colorRampPalette(c("black", "green"))(n = 2)
 heatmap.2(x=t(as.matrix(data)),distfun = function(x) dist(x,method='binary'),scale="column",dendrogram = c("row"),labCol=FALSE,trace="none",margins=c(5,20),key=FALSE, col=my_palette)
 ```
+If clustering numerical data the following commands would be used:
+```
+library("gplots")
+data<-read.table("combined.count.tsv",sep="\t",header=TRUE,row.names=1)
+my_palette <- colorRampPalette(c("black", "black", "black, "black", "black", "green, "green", "green"))(n = 299)
+heatmap.2(x=t(as.matrix(data)),distfun = function(x) dist(x,method='manhattan'),scale="column",dendrogram = c("row"),labCol=FALSE,labRow=colnames(data),trace="none",margins=c(5,20),key=TRUE, col=my_palette)
+```
+
+## This section describes the process of quantifying TEs given previously determined TE insertions (faster)
+
+Broadly speaking there here are the main steps in the process (each described in more detail below):
+-	Mask reference genome for transposons of interest
+-	Trim the reads for adapter/low quality bases
+-	Map reads to transposon sequences
+-	Demultiplex sample data based on transposon mapping
+-	Map the demultiplexed reads to the genome and transposons
+-	Identify informative reads that span TE junctions 
+-	Aggregate informative reads to call TE junctions
+-	Identify and describe putative transposable elements
+-	Create a presence/absence tab-delimited file
+-	Visualize and cluster the binary presence/absence file
