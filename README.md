@@ -110,13 +110,51 @@ heatmap.2(x=t(as.matrix(data)),distfun = function(x) dist(x,method='manhattan'),
 ## This section describes the process of quantifying TEs given previously determined TE insertions (faster)
 
 Broadly speaking there here are the main steps in the process (each described in more detail below):
--	Mask reference genome for transposons of interest
+-	Isolate sequences flanking established transposons
 -	Trim the reads for adapter/low quality bases
 -	Map reads to transposon sequences
--	Demultiplex sample data based on transposon mapping
--	Map the demultiplexed reads to the genome and transposons
--	Identify informative reads that span TE junctions 
--	Aggregate informative reads to call TE junctions
--	Identify and describe putative transposable elements
+-	Create a tab-delimited count table
 -	Create a presence/absence tab-delimited file
 -	Visualize and cluster the binary presence/absence file
+
+### Isolate sequences flanking established transposons
+The extractRegionsOfInterest.py takes existing transposon results determined by the process described above, and extracts fasta sequences flanking the identified transposons:
+```
+ls -1 <all_relevant_result_files_from_a_given_transposon> | python3 extractRegionsOfInterest.py -l - -n <transposon_name> -f <unmasked_reference_fasta> -w <window_size> > <transposon_specific_intervals>.fasta
+```
+**Note**: any overlapping intervals are merged.
+Suggested window size is 300 bps given a typical Nextera library.
+
+### Trim reads for adapter/low quality bases
+There is no specific process for this, use your favorite trimming software. Examples that we use regularly are Trimmomatic or fastp
+
+### Map reads to transposon specific intervals
+Used your favorite mapping software to map R1 reads transposon specific interval sequences. There is no need to generate R2 reads that indicate which transposon is the source.
+As an example:
+```
+bowtie2 -x copia_specific_intervals.fasta --local --no-head -k 2 -U sample_A.fastq.gz | gzip -c > results/sample_A.sam.copia.gz
+```
+
+###	Create a tab-delimited count table
+Generating a table of the results files containing the full path to a particular result file, the sample id to use for this file, and the transposon name. This should be tab-delimited and is used as input.<br>
+Run the following command to convert the results files into a counts table of results for clustering and visualization:
+```
+perl getIntervalCountsTable.pl <results_table> > combined.presence.tsv
+```
+
+### Create a presence/absence tab-delimited file
+
+Here is an tiny example counts table:
+	| Sample A | Sample B | Sample C | Sample D
+1731.2L.10186650.10187243 | 89	| 68	| 84 | 76
+copia.2L.10295155.10295748 | 88 | 73 | 68 | 82
+293.2L.10338613.10339206 | 18 | 0 | 11 | 1
+
+Here is an tiny example presence table:
+	| Sample A | Sample B | Sample C | Sample D
+1731.2L.10186650.10187243 | 1	| 1	| 1	| 1
+copia.2L.10295155.10295748	| 1	| 1 | 1 | 1
+293.2L.10338613.10339206 | 1 | 0 | 1 | 0
+
+### Visualize and cluster the binary presence/absence file
+See the visualization approach described above
