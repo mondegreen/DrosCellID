@@ -152,11 +152,7 @@ copia.2L.10295155.10295748 | 88 | 73 | 68 | 82
 
 Here is an tiny example presence table:<br>
 
-x | Sample A | Sample B | Sample C | Sample D
-- | -------- | -------- | -------- | --------
-1731.2L.10186650.10187243 | 1 | 1 | 1 | 1
-copia.2L.10186650.10187243 | 1 | 1 | 1 | 1
-293.2L.10338613.10339206 | 1 | 0 | 1 | 0
+![image](https://user-images.githubusercontent.com/54181197/125131660-14ff6280-e0d1-11eb-86d8-7c222759d2a8.png)
 
 ### Visualize and cluster the binary presence/absence file
 See the visualization approach described above
