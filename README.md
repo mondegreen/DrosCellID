@@ -151,16 +151,12 @@ copia.2L.10295155.10295748 | 88 | 73 | 68 | 82
 293.2L.10338613.10339206 | 18 | 0 | 11 | 1
 
 Here is an tiny example presence table:<br>
+
 x | Sample A | Sample B | Sample C | Sample D
 - | -------- | -------- | -------- | --------
 1731.2L.10186650.10187243 | 1 | 1 | 1 | 1
-copia.2L.10295155.10295748 | 1 | 1 | 1 | 1
+copia.2L.10186650.10187243 | 1 | 1 | 1 | 1
 293.2L.10338613.10339206 | 1 | 0 | 1 | 0
-
-First Header | Sample A | Third Header | Fourth Header
------------- | -------- | ------------ | -------------
-Content from cell 1 | Content from cell 2
-Content in the first column | Content in the second column
 
 ### Visualize and cluster the binary presence/absence file
 See the visualization approach described above
