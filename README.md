@@ -139,20 +139,18 @@ bowtie2 -x copia_specific_intervals.fasta --local --no-head -k 2 -U sample_A.fas
 Generating a table of the results files containing the full path to a particular result file, the sample id to use for this file, and the transposon name. This should be tab-delimited and is used as input.<br>
 Run the following command to convert the results files into a counts table of results for clustering and visualization:
 ```
-perl getIntervalCountsTable.pl <results_table> > combined.presence.tsv
+perl getIntervalCountsTable.pl <results_table> > combined.counts.tsv
 ```
 
 ### Create a presence/absence tab-delimited file
+Convert the combined counts into a presence/absence (binary) table using z-scores to determine presence/absence:
+perl assessCombinedCounts.pl combined.counts.tsv > combined.presence.tsv
 
-Here is an tiny example counts table:
-	| Sample A | Sample B | Sample C | Sample D
-1731.2L.10186650.10187243 | 89	| 68	| 84 | 76
-copia.2L.10295155.10295748 | 88 | 73 | 68 | 82
-293.2L.10338613.10339206 | 18 | 0 | 11 | 1
+Here is an tiny example counts table:<br>
+![image](https://user-images.githubusercontent.com/54181197/125131874-7c1d1700-e0d1-11eb-8196-787a3e2b48b2.png)
 
 Here is an tiny example presence table:<br>
-
-![image](https://user-images.githubusercontent.com/54181197/125131660-14ff6280-e0d1-11eb-86d8-7c222759d2a8.png)
+![image](https://user-images.githubusercontent.com/54181197/125131929-9951e580-e0d1-11eb-8889-876a86f4dc49.png)
 
 ### Visualize and cluster the binary presence/absence file
 See the visualization approach described above
