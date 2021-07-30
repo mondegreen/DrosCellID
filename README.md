@@ -37,16 +37,16 @@ perl demultiplexPairedSamples.pl transposonMapping/sample1.sam.gz trimmed/sample
 ```
 The output files generated would look like:<br>
 ```
-demultiplexed/sample1.1731.R1.fastq.gz<br>
-demultiplexed/sample1.1731.R2.fastq.gz<br>
-demultiplexed/sample1.297.R1.fastq.gz<br>
-demultiplexed/sample1.297.R2.fastq.gz<br>
-demultiplexed/sample1.copia.R1.fastq.gz<br>
-demultiplexed/sample1.copia.R2.fastq.gz<br>
-demultiplexed/sample1.mdg1.R1.fastq.gz<br>
-demultiplexed/sample1.mdg1.R2.fastq.gz<br>
-demultiplexed/sample1.roo.R1.fastq.gz<br>
-demultiplexed/sample1.roo.R2.fastq.gz<br>
+demultiplexed/sample1.1731.R1.fastq.gz
+demultiplexed/sample1.1731.R2.fastq.gz
+demultiplexed/sample1.297.R1.fastq.gz
+demultiplexed/sample1.297.R2.fastq.gz
+demultiplexed/sample1.copia.R1.fastq.gz
+demultiplexed/sample1.copia.R2.fastq.gz
+demultiplexed/sample1.mdg1.R1.fastq.gz
+demultiplexed/sample1.mdg1.R2.fastq.gz
+demultiplexed/sample1.roo.R1.fastq.gz
+demultiplexed/sample1.roo.R2.fastq.gz
 ```
 
 ### Map the demultiplexed reads to the genome and transposons
